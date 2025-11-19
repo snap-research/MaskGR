@@ -1,0 +1,5 @@
+# Adagrad optimizer from torch.optim
+_target_: torch.optim.Adagrad
+_partial_: true
+lr: !!float 1e-4
+weight_decay: !!float 1e-4

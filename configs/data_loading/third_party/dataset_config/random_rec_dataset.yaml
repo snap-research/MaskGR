@@ -1,0 +1,23 @@
+## Configuration to create a random dataset based on torchrec format.
+## It will generate sparse and dense features if those are passed below.
+## Useful for testing and benchmarking purposes.
+## For more information about the parameters, please refer to the RandomRecDataset class documentation:
+## https://github.com/pytorch/torchrec/blob/c2f7d61/torchrec/datasets/random.py#L125
+
+dataset:
+  _target_: torchrec.datasets.random.RandomRecDataset
+  batch_size: 4 # for this specific dataset, we specify the batch size here as it is created on the fly.
+  hash_size: 100
+  # Hydra does not support keyword arguments. We copy the function signature here for better readability.
+  # Function signature: extract_fields_from_list_of_dicts
+  #   list_of_dicts: ListConfig,
+  #   key: str,
+  #   default: str = None
+  #   filter_key: str = None
+  #   filter_value: str = None
+  keys: ${extract_fields_from_list_of_dicts:${data_loading.features_config.features},"name",null, "is_sparse", "True"}
+  ids_per_features: ${extract_fields_from_list_of_dicts:${data_loading.features_config.features},"num_embeddings", null, "is_sparse", "True"}
+  # This number must match the number of dense features inside features_config.features.
+  num_dense: 30
+  num_generated_batches: 10 # cached batches
+  min_ids_per_features:  ${extract_fields_from_list_of_dicts:${data_loading.features_config.features},"min_ids", null, "is_sparse", "True"}

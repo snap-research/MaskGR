@@ -1,0 +1,5 @@
+## Optimizer and Scheduler configuration for AdamW
+## Uses Adam@ and WarmupLinearScheduler
+defaults:
+  - optimizer: adamw
+  - scheduler: warmup_linear

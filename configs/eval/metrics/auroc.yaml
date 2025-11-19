@@ -1,0 +1,5 @@
+## Config for running the AUROC metric. Defaults to binary classification.
+auroc:
+  _target_: torchmetrics.classification.AUROC
+  _partial_: true
+  task: binary

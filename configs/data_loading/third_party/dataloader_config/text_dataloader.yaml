@@ -1,0 +1,26 @@
+## Dataloader configuration for text based datasets.
+
+dataloader:
+  _target_: src.data.loading.components.interfaces.SequenceDataloaderConfig
+  dataset_class:
+    _target_: src.data.loading.components.dataloading.UnboundedSequenceIterable
+    _partial_: true
+  data_folder: ???
+  should_shuffle_rows: false
+  assign_all_files_per_worker: ???
+  labels: ??? # Add the name of the features that need to be transformed for the labels in the train/validation/test
+  batch_size_per_device: 16 # total batch_size will be batch_size_per_device * num_devices, default to 16 as this fits on a single V100.
+  num_workers: 8 # number of workers for the dataloader per GPU.
+                # Please notice that this number * the number of GPUs should not exceed the number of CPU cores available.
+                # Otherwise it might cause hangs during the training.
+  timeout: 60
+  assign_files_by_size: ???
+  masking_token: !!int 1
+  sequence_length: !!int 512
+  padding_token: !!int 0
+  drop_last: true
+  pin_memory: ???
+  persistent_workers: true
+  collate_fn: ???
+
+  dataset_config: ${data_loading.dataset_config.dataset}

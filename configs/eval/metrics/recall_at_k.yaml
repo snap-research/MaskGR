@@ -1,0 +1,4 @@
+## Recall@K metric for retrieval tasks.
+recall:
+  _target_: src.components.eval_metrics.Recall
+  _partial_: true

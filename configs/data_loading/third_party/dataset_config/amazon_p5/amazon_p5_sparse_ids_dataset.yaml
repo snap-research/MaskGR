@@ -1,0 +1,25 @@
+## Configurations for loading sequences of sparse item IDs from an Amazon P5 dataset.
+
+dataset:
+  _target_: src.data.loading.components.interfaces.SequenceDatasetConfig
+  user_id_field: user_id
+  min_sequence_length: !!int 1
+  iterate_per_row: True
+  features_to_consider: ${extract_fields_from_list_of_dicts:${data_loading.features_config.features}, "name", False, "is_item_ids", "True"}
+  num_placeholder_tokens_map: ${create_map_from_list_of_dicts:${data_loading.features_config.features}, "name", "num_placeholder_tokens_sparse_ids"}
+  data_iterator:
+    _target_: src.data.loading.components.iterators.TFRecordIterator
+
+  # Below is the list of preprocessing functions to apply to the dataset.
+  # We need the partial after the function names, otherwise hydra will try to run the function when the program starts.
+  # processing functions can have a features_to_apply field with a list of features to apply the function to. If not present, the function will be applied to all features.
+  preprocessing_functions:
+    - _target_: src.data.loading.components.pre_processing.filter_features_to_consider
+      _partial_: True
+    - _target_: src.data.loading.components.pre_processing.convert_to_dense_numpy_array
+      _partial_: True
+    - _target_: src.data.loading.components.pre_processing.convert_fields_to_tensors
+      _partial_: True
+    - _target_: src.data.loading.components.pre_processing.add_placeholder_tokens
+      _partial_: True
+  field_type_map: ${create_map_from_list_of_dicts:${data_loading.features_config.features}, "name", "type"}

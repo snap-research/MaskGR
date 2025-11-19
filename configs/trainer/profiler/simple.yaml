@@ -1,0 +1,5 @@
+## Simple profiler that simply records the duration of actions (in seconds) and reports the mean duration of each action and the total time spent over the entire training run.
+## https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.profilers.SimpleProfiler.html#lightning.pytorch.profilers.SimpleProfiler
+
+_target_: lightning.pytorch.profilers.SimpleProfiler
+extended: True

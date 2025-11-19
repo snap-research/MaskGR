@@ -1,0 +1,7 @@
+## Configurations for language modeling datasets.
+
+defaults:
+  - base_text_dataset
+
+dataset:
+  preprocessing_functions: []

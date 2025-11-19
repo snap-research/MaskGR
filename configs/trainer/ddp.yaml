@@ -1,0 +1,19 @@
+defaults:
+  - default
+
+# If you want to pass parameters like the static_graph flag,
+# comment this one out and uncomment the one below.
+# strategy: ddp
+
+# DDP strategy with extended timeout for NCCL operations
+strategy:
+  _target_: lightning.pytorch.strategies.DDPStrategy
+  start_method: popen
+  timeout:
+    _target_: datetime.timedelta
+    seconds: 9600  # 2.67 hours timeout
+
+accelerator: gpu
+devices: -1
+num_nodes: 1
+sync_batchnorm: True

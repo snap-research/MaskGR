@@ -1,0 +1,131 @@
+# @package _global_
+
+defaults:
+  - override /trainer: ddp
+  - override /model: experimental/discrete_diffusion_train
+  - override /data_loading: experimental/discrete_diffusion_sem_ids
+  - override /eval: sid_retrieval
+  - override /optim: adamw
+  - override /callbacks: default
+  - _self_
+
+tags: ["discrete_diffusion"]
+seed: 7
+exp_id: "dd_test2"
+
+model:
+  diffusion_config:
+    max_mask_fraction: 1.0
+  model:
+    _target_: src.experimental.modules.rotary_position_encoding.RotaryTransformerEncoder
+    encoder_layer:
+      _target_: src.experimental.modules.rotary_position_encoding.RotaryTransformerEncoderLayer
+      d_model: ${embedding_dim}
+      nhead: 8
+      dim_feedforward: 3072
+      dropout: 0.25
+      activation: "gelu"
+      batch_first: true
+      norm_first: true
+    num_layers: 8
+
+  use_rotary_position_encoding: true # Enable rotary position encoding
+  num_hierarchies: 5
+
+embedding_dim: 128
+batch_size: 2048
+attend_to_padding: false # Whether to attend to padding tokens in the transformer model
+
+logger: 
+  wandb:
+    id: ${exp_id} # pass correct id to resume experiment!
+
+
+sid_data_path: ./data/amazon/beauty/sids/flan-t5-xl_rkmeans_4_256_seed43.pt
+seq_len: 120
+
+
+data_loading:
+  train_dataloader_config:
+    dataloader:
+      batch_size_per_device: ${batch_size}
+      sequence_length: ${seq_len}  # Maximum sequence length     
+      dataset_config:
+        semantic_id_map:
+          sequence_data:
+            _target_: torch.load
+            _args_:
+              - _target_: src.utils.file_utils.open_local_or_remote
+                file_path: ${sid_data_path}
+                mode: rb # R for read B for binary
+
+  val_dataloader_config:
+    dataloader:
+      batch_size_per_device: ${batch_size}
+  test_dataloader_config:
+    dataloader:
+      batch_size_per_device: ${batch_size}
+
+# Callbacks configuration for checkpointing
+callbacks:
+  model_checkpoint:
+    _target_: src.components.training_callbacks.ModelCheckpointToGCS
+    dirpath: ${paths.output_dir}/checkpoints # directory to save the model file
+    filename: "discrete-diffusion-{step:06d}-{val/recall@5:.4f}" # checkpoint filename
+    monitor: "val/recall@5" # name of the logged metric which determines when model is improving
+    verbose: True # verbosity mode
+    save_last: null # additionally always save an exact copy of the last checkpoint to a file last.ckpt
+    save_top_k: 1 # save k best models (determined by above metric)
+    mode: "max" # "max" means higher metric value is better, can be also "min"
+    auto_insert_metric_name: True # when True, the checkpoints filenames will contain the metric name
+    save_weights_only: False # if True, then only the model's weights will be saved
+    every_n_train_steps: null # number of training steps between checkpoints
+    train_time_interval: null # checkpoints are monitored at the specified time interval
+    every_n_epochs: null # number of epochs between checkpoints
+    save_on_train_epoch_end: null # whether to run checkpointing at the end of the training epoch or the end of validation
+    upload_after_n_checkpoints: 3 # number of checkpoints between uploads to gcs
+    gcs_path: ${paths.output_dir}/checkpoints # path to save the model to gcs
+
+  early_stopping:
+    monitor: ${callbacks.model_checkpoint.monitor}
+    patience: 10
+    mode: ${callbacks.model_checkpoint.mode}
+    strict: true
+    check_on_train_epoch_end: false
+    verbose: true
+
+loss:
+  loss_function:
+    _target_: src.components.loss_functions.FullBatchCrossEntropyLoss
+    normalize: false
+    contrastive_tau: 1.0
+
+# Dataset settings
+paths:
+  data_dir: ./data/amazon_no_cap/beauty
+
+
+# Trainer settings
+trainer:
+  max_steps: 700000
+  precision: 32-true  # Keep 32-bit for stability
+  log_every_n_steps: 2000
+  val_check_interval: 5000
+  num_sanity_val_steps: 0
+  gradient_clip_val: 1.0
+  limit_val_batches: 100000  # Limit validation to all batches
+  # limit_test_batches: 10  # Limit test to 12 batches max
+  accumulate_grad_batches: 1
+
+optim:
+  optimizer:
+    lr: !!float 3e-3
+    weight_decay: !!float 1e-3
+
+# Evaluator settings
+eval:
+  evaluator:
+    _target_: src.components.eval_metrics.SIDRetrievalEvaluator
+    top_k_list:
+      - !!int 5
+      - !!int 10

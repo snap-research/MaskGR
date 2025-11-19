@@ -1,0 +1,48 @@
+## Random dataset with 3 sparse features and 30 dense features. Used mainly to test e2e pipelines and stress test
+## TorchRec.
+features:
+  - name: sparse_feature_0
+    embedding_dim: 32
+    num_embeddings: 1000000
+    min_ids: 1000
+    is_sparse: true
+  - name: sparse_feature_1
+    embedding_dim: 32
+    num_embeddings: 100000
+    min_ids: 1000
+    is_sparse: true
+  - name: sparse_feature_2
+    embedding_dim: 32
+    num_embeddings: 100000
+    min_ids: 1000
+    is_sparse: true
+  - name: int_0
+  - name: int_1
+  - name: int_2
+  - name: int_3
+  - name: int_4
+  - name: int_5
+  - name: int_6
+  - name: int_7
+  - name: int_8
+  - name: int_9
+  - name: int_10
+  - name: int_11
+  - name: int_12
+  - name: int_13
+  - name: int_14
+  - name: int_15
+  - name: int_16
+  - name: int_17
+  - name: int_18
+  - name: int_19
+  - name: int_20
+  - name: int_21
+  - name: int_22
+  - name: int_23
+  - name: int_24
+  - name: int_25
+  - name: int_26
+  - name: int_27
+  - name: int_28
+  - name: int_29

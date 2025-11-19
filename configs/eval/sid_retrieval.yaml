@@ -1,0 +1,10 @@
+## Configs for running metrics for retrieval tasks using semantic IDs
+## This is a simple extension of regular retrieval metrics to support semantic IDs.
+defaults:
+  - _self_
+  - metrics@evaluator.metrics: retrieval_metrics
+evaluator:
+  _target_: src.components.eval_metrics.SIDRetrievalEvaluator
+  top_k_list:
+    - !!int 5
+    - !!int 10

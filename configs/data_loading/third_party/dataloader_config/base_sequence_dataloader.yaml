@@ -1,0 +1,25 @@
+## This is a base dataloader config for reading sequential data from an UnboundedSequenceIterable dataset.
+
+dataloader:
+  _target_: src.data.loading.components.interfaces.SequenceDataloaderConfig
+  dataset_class:
+    _target_: src.data.loading.components.dataloading.UnboundedSequenceIterable
+    _partial_: true
+  data_folder: ???
+  should_shuffle_rows: false
+  labels: ??? # Add the name of the features that need to be transformed for the labels in the train/validation/test defined in the DataModule. It will map the features to the transform functions.
+  batch_size_per_device: 16 # total batch_size will be batch_size_per_device * num_devices, default to 16 as this fits on a single V100.
+  num_workers: 8  # number of CPU workers per device
+  timeout: 60
+  assign_files_by_size: true
+  oov_token: !!int -1
+  masking_token: !!int 1
+  sequence_length: !!int 50
+  padding_token: !!int 0
+  drop_last: true
+  persistent_workers: true
+  collate_fn:
+    _target_: src.data.loading.components.collate_functions.collate_fn_train
+    _partial_: true
+
+  dataset_config: ${data_loading.dataset_config.dataset}

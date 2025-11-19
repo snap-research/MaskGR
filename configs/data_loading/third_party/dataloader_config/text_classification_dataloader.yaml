@@ -1,0 +1,11 @@
+## Dataloader configuration for text classification based datasets.
+
+defaults:
+  - text_dataloader
+
+dataloader:
+  collate_fn:
+    _target_: src.data.loading.components.collate_functions.collate_fn_text_classification
+    _partial_: true
+    tokenizer: ${data_loading.tokenizer_config.tokenizer}
+    sequence_length: ${..sequence_length}

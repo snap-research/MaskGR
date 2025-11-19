@@ -1,0 +1,45 @@
+## Configuration used for Amazon Reviews 2023 datasets preprocessed as in the P5 paper.
+## For more details on the Amazon dataset please see https://amazon-reviews-2023.github.io/index.html
+## For more details on the preprocessing used in the P5 paper please see
+## https://arxiv.org/pdf/2203.13366 (P5) and https://arxiv.org/pdf/2305.05065 (TIGER paper that uses P5 data).
+
+defaults:
+  - third_party/features_config@features_config: amazon_p5/amazon_p5_features
+  - third_party/dataset_config@dataset_config: amazon_p5/amazon_p5_sparse_ids_dataset
+  - third_party/dataloader_config@train_dataloader_config: amazon_p5/amazon_p5_dataloader
+  - third_party/dataloader_config@val_dataloader_config: amazon_p5/amazon_p5_dataloader
+  - third_party/dataloader_config@test_dataloader_config: amazon_p5/amazon_p5_dataloader
+  - _self_
+
+datamodule:
+  _target_: src.data.loading.datamodules.sequence_datamodule.SequenceDataModule
+  train_dataloader_config: ${..train_dataloader_config.dataloader}
+  val_dataloader_config: ${..val_dataloader_config.dataloader}
+  test_dataloader_config: ${..test_dataloader_config.dataloader}
+
+train_dataloader_config:
+  dataloader:
+    data_folder: ${paths.data_dir}/training
+    assign_all_files_per_worker: true
+    should_shuffle_rows: true
+    assign_files_by_size: false
+    pin_memory: false
+    collate_fn:
+      data_augmentation_functions:
+        - _target_: src.experimental.data.loading.components.data_augmentation_functions.end_token_augmentation
+          _partial_: true
+          user_id_field: ${data_loading.train_dataloader_config.dataloader.dataset_config.user_id_field}
+          max_sequence_length: ${data_loading.train_dataloader_config.dataloader.sequence_length}
+          max_batch_size: ${data_loading.train_dataloader_config.dataloader.batch_size_per_device}
+
+val_dataloader_config:
+  dataloader:
+    drop_last: false
+    persistent_workers: false
+    data_folder: ${paths.data_dir}/evaluation
+
+test_dataloader_config:
+  dataloader:
+    drop_last: false
+    persistent_workers: false
+    data_folder: ${paths.data_dir}/testing

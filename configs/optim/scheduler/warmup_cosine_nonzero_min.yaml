@@ -1,0 +1,7 @@
+## This is a custom implementation of the warmup cosine scheduler with a nonzero minimum learning rate
+_target_: src.components.scheduler.WarmupCosineSchedulerNonzeroMin
+_partial_: true
+warmup_steps: !!int 10000
+min_ratio: !!float 0.1
+scheduler_steps: ${trainer.max_steps}
+num_cycles: 0.5

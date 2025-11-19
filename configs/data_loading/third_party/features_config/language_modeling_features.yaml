@@ -1,0 +1,4 @@
+## Features configuration for language modeling tasks.
+
+features:
+  - name: text

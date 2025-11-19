@@ -1,0 +1,11 @@
+## Configurations for the Flan-T5-xl tokenizer from HuggingFace.
+
+max_length: 128
+padding: max_length
+truncation: true
+add_special_tokens: true
+postprocess_eos_token: false
+
+tokenizer:
+  _target_: transformers.T5TokenizerFast.from_pretrained
+  pretrained_model_name_or_path: google/flan-t5-xl

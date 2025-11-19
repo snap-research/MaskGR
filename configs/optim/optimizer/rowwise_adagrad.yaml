@@ -1,0 +1,6 @@
+## RowWiseAdagrad optimizer. It uses torchrec optimizer implementation that leverages fbgemm for efficient rowwise adagrad.
+## It is used for sharded embedding training.
+_target_: torchrec.optim.rowwise_adagrad.RowWiseAdagrad
+_partial_: true
+lr: !!float 0.01
+eps: !!float 0.01

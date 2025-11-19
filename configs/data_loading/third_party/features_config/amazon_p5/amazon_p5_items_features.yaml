@@ -1,0 +1,23 @@
+## Configuration for all the Amazon P5 item features
+
+features:
+  - name: id  # encoded item id. Type: tf.SparseTensor, Shape:(1,)
+    num_placeholder_tokens: 0
+    is_item_ids: true
+    embeddings: ???
+    type:
+      _target_: torch.__dict__.get
+      _args_:
+        - int32
+  - name: text  # item text features: categories, title, brand. Type: tf.SparseTensor of bytes, Shape:(1,)
+    type:
+      _target_: torch.__dict__.get
+      _args_:
+        - bytes
+    is_text: true
+  - name: embedding  # 768-dimensional item text embedding pre-computed by SentenceT5. Type: tf.SparseTensor, Shape:(768,)
+    type:
+      _target_: torch.__dict__.get
+      _args_:
+        - float32
+    is_embedding: true

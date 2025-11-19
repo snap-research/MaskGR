@@ -1,0 +1,21 @@
+## Dataloader config for reading Amazon P5 data from an UnboundedSequenceIterable dataset.
+## For more details on the Amazon dataset please see https://amazon-reviews-2023.github.io/index.html
+## The dataset is preprocessed as in the P5 paper: https://arxiv.org/pdf/2203.13366.
+
+defaults:
+  - base_sequence_dataloader
+  - _self_
+
+
+dataloader:
+  _target_: src.data.loading.components.interfaces.SequenceDataloaderConfig
+  sequence_length: 20
+  labels:
+    sequence_data:
+      transform:
+        _target_: src.data.loading.components.label_function.NextTokenMasking
+  collate_fn:
+    _target_: src.data.loading.components.collate_functions.collate_fn_train
+    _partial_: true
+    sequence_length: ${data_loading.train_dataloader_config.dataloader.sequence_length}
+  dataset_config: ${data_loading.dataset_config.dataset}

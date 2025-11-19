@@ -1,0 +1,21 @@
+## Configurations text based datasets.
+
+dataset:
+  _target_: src.data.loading.components.interfaces.SequenceDatasetConfig
+  # We set the text as the user_id_field so it can be used during inference.
+  # This way, it will store text, predicted_label as the output of predict_step.
+  user_id_field: text
+  features_to_consider: ${extract_fields_from_list_of_dicts:${data_loading.features_config.features},"name"}
+  num_placeholder_tokens_map: ${create_map_from_list_of_dicts:${data_loading.features_config.features},"name","num_placeholder_tokens"}
+  iterate_per_row: True
+  data_iterator:
+    _target_: src.data.loading.components.iterators.ParquetDataIterator
+    buffer_size: 1000
+    features_to_consider: ${extract_fields_from_list_of_dicts:${data_loading.features_config.features},"name"}
+  feature_map:
+    text: input_ids
+  preprocessing_functions:
+    - _target_: src.data.loading.components.pre_processing.convert_fields_to_tensors
+      _partial_: True
+      features_to_apply:
+        - label

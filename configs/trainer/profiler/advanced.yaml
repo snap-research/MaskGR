@@ -1,0 +1,9 @@
+## This profiler uses Python’s cProfiler to record more detailed information about time spent in each function call recorded during a given action.
+## The output is quite verbose and you should only use this if you want very detailed reports. Works for multinode and single node profiling.
+## https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.profilers.AdvancedProfiler.html#lightning.pytorch.profilers.AdvancedProfiler
+
+_target_: lightning.pytorch.profilers.AdvancedProfiler
+line_count_restriction: 1.0 # returns all lines
+# uncomment lines below if you would like to save the output to a file
+dirpath: ${paths.profile_dir}/${id}
+filename: advanced_profiler_output.txt

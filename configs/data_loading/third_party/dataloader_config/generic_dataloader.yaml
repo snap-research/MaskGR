@@ -1,0 +1,9 @@
+## Configuration to build a dataloader from a generic dataset.
+dataloader:
+  _target_: torch.utils.data.DataLoader
+  dataset: ${data_loading.dataset_config.dataset}
+  pin_memory: False
+  num_workers: 8
+  collate_fn:
+    _target_: src.data.loading.components.collate_functions.return_first_element_collate_fn
+    _partial_: true

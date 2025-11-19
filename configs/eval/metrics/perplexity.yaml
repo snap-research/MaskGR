@@ -1,0 +1,4 @@
+## Perplexity metric for language modeling tasks.
+perplexity:
+  _target_: torchmetrics.text.Perplexity
+  _partial_: true

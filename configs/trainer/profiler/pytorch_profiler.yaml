@@ -1,0 +1,19 @@
+## This profiler uses PyTorch’s Autograd Profiler and lets you inspect the cost of different operators inside your model - both on the CPU and GPU.
+## It also can generate a trace.json file that can run in Chrome’s chrome://tracing tool to visualize the performance of your model.
+## https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.profilers.PyTorchProfiler.html#lightning.pytorch.profilers.PyTorchProfiler
+## It is the recommended profiler. The only limitation is that it currently does not work well for multinode. For multinode, use advanced profiler.
+
+_target_: lightning.pytorch.profilers.PyTorchProfiler
+sort_by_key: cpu_time_total # avaialble keys: cpu_time, cuda_time, cpu_time_total, cuda_time_total, cpu_memory_usage, cuda_memory_usage, self_cpu_memory_usage, self_cuda_memory_usage, count
+group_by_input_shape: True
+record_module_names: True
+emit_nvtx: False # for some reason, this is not working in Lightning for 2.4.0
+export_to_chrome: True # If this is true, we need to pass the dirpath argument
+dirpath: ${paths.profile_dir}
+filename: pytorch_profiler_output
+row_limit: -1
+schedule:
+  _target_: src.utils.profiling_utils.Schedule
+  wait: 5  # Number of steps per cycle in which the profiler is not active.
+  warmup: 10  # Number of steps per cycle in which the profiler starts tracing, but discards the results. This is useful because there may be a large overhead cost to starting tracing.
+  active: 30  # Number of steps per cycle in which the profiler traces and records the results.

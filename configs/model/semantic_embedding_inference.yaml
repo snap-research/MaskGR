@@ -1,0 +1,18 @@
+## Configurations for a Semantic Embedding Inference model.
+## This model is intended to be used only for inferring semantic item embeddings.
+
+defaults:
+  - huggingface_model/flan-t5-xxl@semantic_embedding_model.huggingface_model
+  - _self_
+
+_target_: src.experimental.modules.semantic_embedding_inference_module.SemanticEmbeddingInferenceModule
+
+semantic_embedding_model_input_map:
+  input_ids: text_tokens
+  attention_mask: text_mask
+semantic_embedding_model:
+  _target_: src.experimental.components.network_blocks.hf_language_model.HFLanguageModel
+  aggregator:
+    _target_: src.models.components.network_blocks.embedding_aggregator.EmbeddingAggregator
+    aggregation_strategy:
+      _target_: src.models.components.network_blocks.aggregation_strategy.MeanAggregation

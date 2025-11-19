@@ -1,0 +1,36 @@
+## Fully Sharded Data Parallel (FSDP) strategy configuration for training large LLMs efficiently.
+
+defaults:
+  - ddp
+  - _self_
+
+sync_batchnorm: False
+# Use FSDP strategy
+strategy:
+  _target_: lightning.pytorch.strategies.fsdp.FSDPStrategy
+  cpu_offload: False  # Disable CPU offload for faster training
+
+  state_dict_type: "sharded"  # Use sharded state dict instead of full for memory savings
+  sharding_strategy: FULL_SHARD
+  backward_prefetch: BACKWARD_PRE
+  mixed_precision:
+    _target_: torch.distributed.fsdp.MixedPrecision
+    param_dtype:
+      _target_: torch.__dict__.get
+      _args_:
+        - bfloat16
+    reduce_dtype:
+      _target_: torch.__dict__.get
+      _args_:
+        - bfloat16
+    buffer_dtype:
+      _target_: torch.__dict__.get
+      _args_:
+        - bfloat16
+
+  # Limit bucket size for better memory management
+  limit_all_gathers: True
+
+
+# Use gradient accumulation to increase effective batch size
+accumulate_grad_batches: 256

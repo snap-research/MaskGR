@@ -1,0 +1,10 @@
+## Configurations text based datasets doing classification tasks.
+defaults:
+  - base_text_dataset
+
+dataset:
+  preprocessing_functions:
+    - _target_: src.data.loading.components.pre_processing.convert_fields_to_tensors
+      _partial_: True
+      features_to_apply:
+        - label

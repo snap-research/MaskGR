@@ -1,0 +1,17 @@
+## Configurations for the Sup-SimCSE BERT tokenizer from HuggingFace.
+
+max_length: 128
+padding: max_length
+truncation: true
+add_special_tokens: true
+special_tokens:
+  cls_token: "[CLS]"
+  sep_token: "[SEP]"
+  pad_token: "[PAD]"
+  mask_token: "[MASK]"
+  unk_token: "[UNK]"
+postprocess_eos_token: false
+
+tokenizer:
+  _target_: transformers.BertTokenizer.from_pretrained
+  pretrained_model_name_or_path: princeton-nlp/sup-simcse-bert-base-uncased

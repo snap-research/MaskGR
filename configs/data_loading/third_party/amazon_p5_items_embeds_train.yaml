@@ -1,0 +1,22 @@
+## Configuration used for loading Amazon P5 item data with embeddings for training.
+defaults:
+  - third_party/features_config@features_config: amazon_p5/amazon_p5_items_features
+  - third_party/dataset_config@dataset_config: amazon_p5/amazon_p5_items_embeds_dataset
+  - third_party/dataloader_config@train_dataloader_config: amazon_p5/amazon_p5_items_dataloader
+  - third_party/dataloader_config@val_dataloader_config: amazon_p5/amazon_p5_items_dataloader
+  - third_party/dataloader_config@test_dataloader_config: amazon_p5/amazon_p5_items_dataloader
+  - _self_
+
+
+datamodule:
+  _target_: src.experimental.data.loading.datamodules.item_datamodule.ItemDataModule
+  train_dataloader_config: ${..train_dataloader_config.dataloader}
+  val_dataloader_config: ${..val_dataloader_config.dataloader}
+  test_dataloader_config: ${..test_dataloader_config.dataloader}
+
+train_dataloader_config:
+  dataloader:
+    should_shuffle_rows: true
+    assign_files_by_size: false
+    pin_memory: true
+    assign_all_files_per_worker: true

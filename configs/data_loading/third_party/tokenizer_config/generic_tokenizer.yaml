@@ -1,0 +1,9 @@
+## Generic HuggingFace tokenizer configuration.
+
+tokenizer:
+  _target_: transformers.AutoTokenizer.from_pretrained
+  pretrained_model_name_or_path: ???
+  padding_side: right
+  truncation_side: right
+  add_prefix_space: True
+  return_special_tokens_mask: true

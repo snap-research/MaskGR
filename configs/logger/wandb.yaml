@@ -1,0 +1,9 @@
+## If Wandb is available, it will be used as the logger.
+# https://wandb.ai
+
+wandb:
+  _target_: lightning.pytorch.loggers.wandb.WandbLogger
+  save_dir: "${paths.output_dir}"
+  offline: False
+  id: null # pass correct id to resume experiment!
+  project: "diffusid2"

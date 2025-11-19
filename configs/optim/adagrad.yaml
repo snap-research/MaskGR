@@ -1,0 +1,5 @@
+## Optimizer and Scheduler configuration for Adagrad
+## Uses Adagrad and WarmupLinearScheduler
+defaults:
+  - optimizer: adagrad
+  - scheduler: warmup_linear

@@ -1,0 +1,5 @@
+## Accuracy metric configuration. Defaults to binary classification.
+accuracy:
+  _target_: torchmetrics.Accuracy
+  _partial_: true
+  task: binary

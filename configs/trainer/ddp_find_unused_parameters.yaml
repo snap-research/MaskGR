@@ -1,0 +1,15 @@
+defaults:
+  - default
+
+# DDP strategy with find_unused_parameters=True and extended timeout
+strategy:
+  _target_: lightning.pytorch.strategies.DDPStrategy
+  find_unused_parameters: True
+  timeout:
+    _target_: datetime.timedelta
+    seconds: 9600  # 2.67 hours timeout
+
+accelerator: gpu
+devices: -1
+num_nodes: 1
+sync_batchnorm: True

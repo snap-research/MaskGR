@@ -1,0 +1,29 @@
+## Configurations for the dataset used for Amazon P5 dataset with semantic ids.
+## This dataset loads semantic ids given a mapping from sparse ids.
+
+dataset:
+  _target_: src.data.loading.components.interfaces.SemanticIDDatasetConfig
+  user_id_field: user_id
+  min_sequence_length: !!int 1
+  iterate_per_row: True
+  features_to_consider: ${extract_fields_from_list_of_dicts:${data_loading.features_config.features}, "name", False, "is_item_ids", "True"}
+  num_placeholder_tokens_map: ${create_map_from_list_of_dicts:${data_loading.features_config.features}, "name", "num_placeholder_tokens"}
+  semantic_id_map: ${create_map_from_list_of_dicts:${data_loading.features_config.features}, "name", "semantic_ids"}
+  data_iterator:
+    _target_: src.data.loading.components.iterators.TFRecordIterator
+
+  # Below is the list of preprocessing functions to apply to the dataset.
+  # We need the partial after the function names, otherwise hydra will try to run the function when the program starts.
+  # processing functions can have a features_to_apply field with a list of features to apply the function to. If not present, the function will be applied to all features.
+  preprocessing_functions:
+    - _target_: src.data.loading.components.pre_processing.filter_features_to_consider
+      _partial_: True
+    - _target_: src.data.loading.components.pre_processing.convert_to_dense_numpy_array
+      _partial_: True
+    - _target_: src.data.loading.components.pre_processing.convert_fields_to_tensors
+      _partial_: True
+    - _target_: src.data.loading.components.pre_processing.map_sparse_id_to_semantic_id
+      _partial_: True
+      features_to_apply:
+        - sequence_data
+      num_hierarchies: ${model.num_hierarchies}

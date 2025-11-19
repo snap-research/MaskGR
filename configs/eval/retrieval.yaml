@@ -1,0 +1,13 @@
+## Configs for running metrics for retrieval tasks
+defaults:
+  - _self_
+  - metrics@evaluator.metrics: retrieval_metrics
+evaluator:
+  _target_: src.components.eval_metrics.RetrievalEvaluator
+  # metrics: ${..metric_library}
+  top_k_list:
+    - !!int 10
+    - !!int 20
+  should_sample_negatives_from_vocab: !!bool true
+  num_negatives: !!int 500000
+  placeholder_token_buffer: 0

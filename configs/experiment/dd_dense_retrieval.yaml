@@ -1,0 +1,72 @@
+# @package _global_
+
+defaults:
+  - discrete_diffusion_train
+
+trainer:
+  val_check_interval: 1000
+
+rank: 64
+
+model:
+  _target_: src.experimental.modules.dd.DenseDiscreteDiffusionModule
+  embedding_path: ./data/amazon/beauty/item_semantic_embeddings/flan-t5-xxl.pt
+
+  dense_retrieval:
+    loss_weight: 1.0
+    update_frequency: 10
+    noise: "mask-multiple-random-item" 
+    # input_item_text_projection: null
+    zero_out_sid_mask_projection: true
+    input_layernorm: 
+      _target_: torch.nn.LayerNorm
+      normalized_shape: ${embedding_dim}
+    input_dropout: 
+      _target_: torch.nn.Dropout
+      p: 0.5
+    embedding_normalization_factor: true
+    extract_embed_from_lyr: 6
+    input_item_text_projection: 
+      _target_: src.models.components.network_blocks.low_rank_mlp.LowRankLinear
+      rank: ${rank}
+      in_features: 4096
+      out_features: 640
+  
+  dense_retrieval_loss_function:
+    _target_: src.components.loss_functions.FullDenseRetrievalLoss
+    contrastive_tau: 0.1
+
+  diffusion_config:
+    inference_type: "dense-retrieval"
+
+
+  item_embedding_projection:
+    _target_: src.models.components.network_blocks.low_rank_mlp.LowRankLinear
+    rank: ${rank}
+    in_features: 640
+    out_features: 4096
+    # _target_: src.models.components.network_blocks.low_rank_mlp.LowRankMLP
+    # input_dim: 640
+    # rank: 32
+    # hidden_dim_list:
+    # - 256
+    # output_dim: 4096
+    # activation:
+    #   _target_: torch.nn.ReLU
+    #   _partial_: true
+
+  dense_retrieval_evaluator:
+    _target_: src.components.eval_metrics.RetrievalEvaluator
+    should_sample_negatives_from_vocab: False
+    placeholder_token_buffer: null
+    top_k_list:
+      - !!int 5
+      - !!int 10
+    
+    metrics:
+      recall:
+        _target_: src.components.eval_metrics.Recall
+        _partial_: true
+      ndcg:
+        _target_: src.components.eval_metrics.NDCG
+        _partial_: true

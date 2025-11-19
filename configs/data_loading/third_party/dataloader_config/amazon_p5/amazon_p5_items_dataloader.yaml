@@ -1,0 +1,27 @@
+## Dataloader config for reading Amazon P5 items features from an UnboundedSequenceIterable dataset.
+dataloader:
+  _target_: src.experimental.data.loading.components.interfaces.ItemDataloaderConfig
+  dataset_class:
+    _target_: src.data.loading.components.dataloading.UnboundedSequenceIterable
+    _partial_: true
+  data_folder: ???
+  should_shuffle_rows: false
+  # total batch_size will be batch_size_per_device * num_devices
+  batch_size_per_device: 16
+  num_workers: 4
+  assign_files_by_size: true
+  timeout: 60
+  drop_last: false
+  pin_memory: false
+  persistent_workers: true
+  collate_fn:
+    _target_: src.experimental.data.loading.components.collate_functions.collate_fn_items
+    _partial_: true
+    item_id_field: ${data_loading.dataset_config.dataset.item_id_field}
+    feature_to_input_name:
+      id: item_ids
+      text: text_tokens
+      text_mask: text_mask
+      embedding: input_embedding
+  dataset_config: ${data_loading.dataset_config.dataset}
+  limit_files: null

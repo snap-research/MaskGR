@@ -1,0 +1,10 @@
+## Configuration used for loading Amazon P5 item data with embeddings for inference.
+defaults:
+  - third_party/features_config@features_config: amazon_p5/amazon_p5_items_features
+  - third_party/dataset_config@dataset_config: amazon_p5/amazon_p5_items_embeds_dataset
+  - third_party/dataloader_config@predict_dataloader_config: amazon_p5/amazon_p5_items_dataloader
+  - _self_
+
+datamodule:
+  _target_: src.experimental.data.loading.datamodules.item_datamodule.ItemDataModule
+  predict_dataloader_config: ${..predict_dataloader_config.dataloader}

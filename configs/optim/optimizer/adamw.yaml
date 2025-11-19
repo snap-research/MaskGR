@@ -1,0 +1,8 @@
+## AdamW optimizer from torch.optim
+_target_: torch.optim.AdamW
+_partial_: true
+lr: !!float 1e-4
+weight_decay: !!float 1e-2
+eps: !!float 1e-8
+betas: [0.9, 0.999]
+amsgrad: False

@@ -1,0 +1,7 @@
+## Recall metric for classification tasks.
+recall:
+  _target_: torchmetrics.Recall
+  _partial_: true
+  task: multiclass
+  num_classes: ${model.huggingface_model.num_labels}
+  average: macro

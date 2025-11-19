@@ -1,0 +1,28 @@
+## Configuration for all the Amazon P5 features
+
+features:
+  - name: sequence_data  # user history sequence of encoded item sparse ids. Type: tf.SparseTensor, Shape:(sequence_length,)
+    num_placeholder_tokens: 0  # when training with semantic IDs, we don't add placeholder tokens because this would break the mapping from sparse IDs to semantic IDs
+    num_placeholder_tokens_sparse_ids: 2  # when training with sparse ids, we add 2 placeholder tokens: pad and mask
+    semantic_ids: ???
+    is_item_ids: true
+    type:
+      _target_: torch.__dict__.get
+      _args_:
+        - int32
+  - name: embedding  # sequence of 768-dimensional item text embeddings computed by SentenceT5. Type: tf.SparseTensor, Shape:(sequence_length * 768,)
+    type:
+      _target_: torch.__dict__.get
+      _args_:
+        - float32
+  - name: text  # sequence of item text features: categories, title, brand. Type: tf.SparseTensor of bytes, Shape:(sequence_length,)
+    type:
+      _target_: torch.__dict__.get
+      _args_:
+        - bytes
+  - name: user_id
+    is_item_ids: true
+    type:
+      _target_: torch.__dict__.get
+      _args_:
+        - int32

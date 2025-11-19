@@ -1,0 +1,11 @@
+##Logs to local tensorboard. A better option is to use Vertex AI logger that logs to Vertex AI Tensorboard.
+# https://www.tensorflow.org/tensorboard/
+
+tensorboard:
+  _target_: lightning.pytorch.loggers.tensorboard.TensorBoardLogger
+  save_dir: "${paths.output_dir}/tensorboard/"
+  name: null
+  log_graph: False
+  default_hp_metric: True
+  prefix: ""
+  # version: ""

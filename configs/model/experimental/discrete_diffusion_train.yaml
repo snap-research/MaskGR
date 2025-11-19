@@ -1,0 +1,54 @@
+_target_: src.experimental.modules.discrete_diffusion_module.DiscreteDiffusionModule
+
+codebooks: ${data_loading.train_dataloader_config.dataloader.dataset_config.semantic_id_map.sequence_data}
+num_hierarchies: 4
+
+vocab_size: 256     
+embedding_dim: ${embedding_dim} 
+
+masking_token_id: ${model.vocab_size}  # Masking token ID, should be the last ID in the vocabulary
+padding_token_id: -1
+attend_to_padding: ${attend_to_padding} # Whether to attend to padding tokens in the transformer model
+
+
+model:
+  _target_: torch.nn.TransformerEncoder
+  encoder_layer:
+    _target_: torch.nn.TransformerEncoderLayer
+    d_model: ${embedding_dim}         # Should match embedding_dim
+    nhead: 8              # Number of attention heads
+    dim_feedforward: 3072 
+    dropout: 0.25
+    activation: "gelu"
+    batch_first: true
+    norm_first: true
+  num_layers: 8
+
+diffusion_config:
+  num_steps: ${model.num_hierarchies}  ## Number of diffusion steps=num_hierarchies
+  num_candidates: 10
+
+  inference_type: "beam-search-generation" ## Options: "beam-search-generation", "constrained-beam-search-generation". 
+                                 ## "beam-search-generation" means beam search generation, 
+                                 ## "constrained-beam-search-generation" means constrained beam search generation.
+  
+  constrained_beam_refinement_steps: 10 ## Number of refinement steps for constrained beam search generation.
+  constrained_beam_initial: "generated" ## Options: "random", "generated". 
+                                 ## "random" means random initial candidates, "generated" means generated initial candidates.
+  prune_generation_values: "multi-step" ## Options: "one-step", "multi-step". 
+                                 ## "one-step" means prune generation values after one step, "multi-step" means prune generation values after multiple steps.
+
+  noise_schedule: "uniform"          ## Options: "uniform", "edm", "last-token-ar". 
+                                 ## "uniform" means uniform noise schedule, "edm" means edm noise schedule, "last-token-ar" means last token autoregressive noise schedule.
+  unmasking_type: "top-prob"       ## Options: "random", "top-prob", "top-prob-dup-last", "left-to-right". 
+                                 ## "random" means randomly select the positions to predict, "top-prob" means predict the top probability tokens.
+  unmasking_temperature: 0.01
+  maskout_masking_token_prob_decoding: true ## If true, the masking token will not be predicted during decoding.
+
+loss_function: ${loss.loss_function}
+
+optimizer: ${optim.optimizer}
+
+scheduler: ${optim.scheduler}
+
+evaluator: ${eval.evaluator}

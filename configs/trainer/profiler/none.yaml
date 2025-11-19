@@ -1,0 +1,3 @@
+## Default profiler for the trainer, does not do anything
+
+_target_: lightning.pytorch.profilers.PassThroughProfiler

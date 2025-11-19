@@ -1,0 +1,5 @@
+## Adam optimizer from torch.optim
+_target_: torch.optim.Adam
+_partial_: true
+lr: !!float 1e-5
+weight_decay: !!float 1e-4

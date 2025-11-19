@@ -1,0 +1,22 @@
+# @package _global_
+
+defaults:
+  - _self_
+  - data_loading: null # choose datamodule with `test_dataloader()` for evaluation
+  - model: hf_transformer
+  - logger: wandb
+  - trainer: default
+  - paths: default
+  - extras: default
+  - hydra: default
+  - loss: in_batch_contrastive_loss
+  - optim: default
+  - eval: retrieval
+  - experiment: null
+
+task_name: "eval"
+id: ${now:%Y-%m-%d}_${now:%H-%M-%S}
+tags: ["dev"]
+
+# passing checkpoint path is necessary for evaluation
+ckpt_path: ???

@@ -1,0 +1,88 @@
+## Configuration used for loading Amazon P5 data with semantic IDs.
+## Currently training, testing, and evaluation all use next token masking.
+## For more details on the preprocessing used in the P5 paper please see
+## https://arxiv.org/pdf/2203.13366 (P5) and
+## https://arxiv.org/pdf/2305.05065 (TIGER paper that uses semantic IDs and P5 data).
+
+defaults:
+  - third_party/features_config@features_config: amazon_p5/amazon_p5_features
+  - third_party/dataset_config@dataset_config: amazon_p5/amazon_p5_sem_ids_dataset
+  - third_party/dataloader_config@train_dataloader_config: amazon_p5/amazon_p5_dataloader
+  - third_party/dataloader_config@val_dataloader_config: amazon_p5/amazon_p5_dataloader
+  - third_party/dataloader_config@test_dataloader_config: amazon_p5/amazon_p5_dataloader
+  - _self_
+
+datamodule:
+  _target_: src.data.loading.datamodules.sequence_datamodule.SequenceDataModule
+  train_dataloader_config: ${..train_dataloader_config.dataloader}
+  val_dataloader_config: ${..val_dataloader_config.dataloader}
+  test_dataloader_config: ${..test_dataloader_config.dataloader}
+
+train_dataloader_config:
+  dataloader:
+    data_folder: ${paths.data_dir}/training
+    assign_files_by_size: false
+    assign_all_files_per_worker: true
+    should_shuffle_rows: true # this is extremely important for training
+    # toggle this to false would cause all GPUs receiving the same training data
+    # and the model would collapse very quickly
+    labels:
+      sequence_data:
+        transform:
+          _target_: src.data.loading.components.label_function.Identity
+          # mask_probability: 0.15
+    collate_fn:
+      _target_: src.data.loading.components.collate_functions.collate_fn_train # we use this collate function to
+      # turn sequences into contiguous sub-sequences
+      _partial_: true
+      # padding_token: ${data_loading.train_dataloader_config.dataloader.padding_token}
+      # sequence_field_name: sequence_data
+      # sid_hierarchy: ${model.num_hierarchies}
+      # max_batch_size: 512 # the maximum number of sub-sequences to prevent OOM
+    padding_token: ${model.padding_token_id} # this is the padding token for the model
+    masking_token: ${model.masking_token_id} # this is the masking token for the model
+    oov_token: ~
+
+val_dataloader_config:
+  dataloader:
+    pin_memory: false
+    persistent_workers: false
+    data_folder: ${paths.data_dir}/evaluation
+    assign_files_by_size: true
+    drop_last: false
+    labels:
+      sequence_data:
+        transform:
+          _target_: src.data.loading.components.label_function.NextKTokenMasking
+          next_k: ${model.num_hierarchies}
+    sequence_length: ${data_loading.train_dataloader_config.dataloader.sequence_length}
+    dataset_config: ${data_loading.train_dataloader_config.dataloader.dataset_config}
+    collate_fn:
+      _target_: src.data.loading.components.collate_functions.collate_fn_train
+      _partial_: true
+      padding_token: ${data_loading.train_dataloader_config.dataloader.padding_token}
+    padding_token: ${data_loading.train_dataloader_config.dataloader.padding_token}
+    masking_token: ${data_loading.train_dataloader_config.dataloader.masking_token}
+    oov_token: ${data_loading.train_dataloader_config.dataloader.oov_token}
+
+test_dataloader_config:
+  dataloader:
+    pin_memory: false
+    persistent_workers: false
+    data_folder: ${paths.data_dir}/testing
+    assign_files_by_size: true
+    drop_last: false
+    labels:
+      sequence_data:
+        transform:
+          _target_: src.data.loading.components.label_function.NextKTokenMasking
+          next_k: ${model.num_hierarchies}
+    sequence_length: ${data_loading.train_dataloader_config.dataloader.sequence_length}
+    dataset_config: ${data_loading.train_dataloader_config.dataloader.dataset_config}
+    collate_fn:
+      _target_: src.data.loading.components.collate_functions.collate_fn_train
+      _partial_: true
+      padding_token: ${data_loading.train_dataloader_config.dataloader.padding_token}
+    padding_token: ${data_loading.train_dataloader_config.dataloader.padding_token}
+    masking_token: ${data_loading.train_dataloader_config.dataloader.masking_token}
+    oov_token: ${data_loading.train_dataloader_config.dataloader.oov_token}

@@ -1,0 +1,4 @@
+## Combination of common retrieval metrics.
+defaults:
+  - ndcg
+  - recall_at_k

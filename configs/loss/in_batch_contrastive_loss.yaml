@@ -1,0 +1,5 @@
+## Computes the in-batch contrastive loss.
+loss_function:
+  _target_: src.components.loss_functions.InBatchContrastiveLoss
+  contrastive_tau: !!float 0.1
+  normalize: true

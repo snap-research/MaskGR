@@ -1,0 +1,41 @@
+## This is a dataset config file for datasets of items constructed from Amazon P5 data.
+dataset:
+  _target_: src.experimental.data.loading.components.interfaces.ItemDatasetConfig
+  item_id_field: id
+  keep_item_id: True
+  iterate_per_row: True
+  data_iterator:
+    _target_: src.data.loading.components.iterators.TFRecordIterator
+
+  features_to_consider: ${extract_fields_from_list_of_dicts:${data_loading.features_config.features}, "name", False, "is_text", "True"}
+  num_placeholder_tokens_map: ${create_map_from_list_of_dicts:${data_loading.features_config.features}, "name", "num_placeholder_tokens"}
+
+  # We need the partial after the name otherwise hydra will try to run the function when the program starts.
+  # processing functions can have a features_to_apply field with a list of features to apply the function to. If not present, the function will be applied to all features.
+  preprocessing_functions:
+    - _target_: src.data.loading.components.pre_processing.filter_features_to_consider
+      _partial_: True
+    - _target_: src.data.loading.components.pre_processing.convert_to_dense_numpy_array
+      _partial_: True
+      features_to_apply:
+        - id
+        - text
+    - _target_: src.data.loading.components.pre_processing.convert_fields_to_tensors
+      _partial_: True
+      features_to_apply:
+        - id
+    - _target_: src.data.loading.components.pre_processing.convert_bytes_to_string
+      _partial_: True
+      features_to_apply:
+        - text
+    - _target_: src.experimental.data.loading.components.pre_processing.tokenize_text_features
+      _partial_: True
+      features_to_apply:
+        - text
+      tokenizer_config: ${data_loading.tokenizer_config}
+    - _target_: src.experimental.data.loading.components.pre_processing.squeeze_tensor_in_place
+      _partial_: True
+      features_to_apply:
+        - text
+        - text_mask
+  field_type_map: ${create_map_from_list_of_dicts:${data_loading.features_config.features}, "name", "type"}

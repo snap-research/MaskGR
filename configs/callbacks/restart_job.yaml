@@ -1,0 +1,3 @@
+restart_job:
+  _target_: src.utils.restart_job.RestartAndLoadCheckpointCallback
+  metadata_dir: ${paths.metadata_dir}

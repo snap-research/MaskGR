@@ -1,0 +1,8 @@
+## F1 metric for classification tasks.
+
+f1:
+  _target_: torchmetrics.F1Score
+  _partial_: true
+  task: multiclass
+  num_classes: ${model.huggingface_model.num_labels}
+  average: macro

@@ -1,0 +1,8 @@
+## Precision metric for classification tasks.
+
+precision:
+  _target_: torchmetrics.Precision
+  _partial_: true
+  task: multiclass
+  num_classes: ${model.huggingface_model.num_labels}
+  average: macro

@@ -1,0 +1,14 @@
+## Dataloader configuration for language modeling based datasets.
+
+defaults:
+  - text_dataloader
+
+dataloader:
+  collate_fn:
+    _target_: src.data.loading.components.collate_functions.collate_fn_language_modeling
+    _partial_: true
+    tokenizer: ${data_loading.tokenizer_config.tokenizer}
+    sequence_length: ${..sequence_length}
+    use_mlm: True
+    mlm_probability: 0.15
+  labels: null

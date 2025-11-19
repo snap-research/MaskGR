@@ -1,4 +1,4 @@
-# MADRec: MAsked Diffusion for generative Recommendation
+# Masked Diffusion for Generative Recommendation
 
 This repository implements a masked diffusion model on semantic-ID (SID) representations of items. It contains training and evaluation code, configuration files (Hydra), and utilities for data loading and model checkpoints.
 
@@ -12,7 +12,7 @@ This README explains how to prepare the environment, curate the SID data (using 
 make train-gpu ARGS="experiment=discrete_diffusion_train"
 ```
 
-- Inference / resume from a checkpoint (GPU):
+- Resume training from a checkpoint (GPU):
 
 ```bash
 make train-gpu ARGS="experiment=discrete_diffusion_train ckpt_path=<path/to/checkpoint.ckpt>"

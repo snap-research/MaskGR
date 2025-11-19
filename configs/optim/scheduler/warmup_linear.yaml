@@ -1,0 +1,6 @@
+## WarmupLinearScheduler config.
+_target_: src.components.scheduler.WarmupLinearScheduler
+_partial_: true
+warmup_steps: !!int 10000
+min_ratio: !!float 0.3
+scheduler_steps: ${trainer.max_steps}

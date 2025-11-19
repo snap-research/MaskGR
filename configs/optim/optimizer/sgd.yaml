@@ -1,0 +1,4 @@
+## SGD optimizer from torch.optim
+_target_:  torch.optim.SGD
+_partial_: true
+lr: !!float 1e-2
