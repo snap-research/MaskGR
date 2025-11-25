@@ -117,3 +117,7 @@ make train-gpu ARGS="experiment=discrete_diffusion_train train=false ckpt_path=/
 ```
 
 Evaluation metrics and retrieval settings are configured in `configs/eval/sid_retrieval.yaml` and the experiment YAML; you can modify `eval.evaluator` related keys to adjust top-k and sequence length evaluation parameters.
+
+## Acknowledgements
+
+This work builds upon the GRID framework for creating semantic-ID representations: [Paper](https://arxiv.org/abs/2507.22224) and [Github repository](https://github.com/snap-research/GRID).
