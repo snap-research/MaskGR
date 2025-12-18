@@ -25,8 +25,8 @@ Note: the project also provides `make inference` and `make inference-gpu` target
 We recommend Python 3.10. The following steps can be used to create an environment and setup the dependencies.
 
 ```bash
-conda create -n madrec python=3.10 -y
-conda activate madrec
+conda create -n maskgr python=3.10 -y
+conda activate maskgr
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
